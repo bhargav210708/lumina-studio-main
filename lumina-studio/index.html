@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lumina Studio</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#050505"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head>
+<body>
+<canvas id="view"></canvas><canvas id="hl"></canvas><canvas id="rb"></canvas>
+<div id="burn"></div><div id="toast"></div>
+<input id="file" type="file" accept="image/*" hidden>
+<header id="top"><span class="logo">lumina</span><span class="sp"></span><button class="rb" id="scopeBtn" title="Scopes"></button><button class="rb" id="open2" title="Open photo"></button></header><input id="hist" type="range" min="0" max="0" value="0" title="Edit history">
+<div id="empty"><div class="marq"><div>lumina &middot; film-grade colour &middot; lumina &middot; film-grade colour &middot; lumina &middot; film-grade colour &middot; lumina &middot; film-grade colour &middot; </div></div><button class="btn big" id="open">Open a photo</button><button class="btn big" id="sample">Try sample</button><button class="btn big" id="liveBtn">Live monitor</button></div>
+<aside id="panel" class="glass" hidden><h2 id="trayTitle"></h2>
+  <div id="sliders"></div>
+  <details open data-t="curves"><summary>Curves <small>(click add · double-click remove)</small></summary>
+  <div id="crvTabs"><button class="btn on" data-c="m">RGB</button><button class="btn" data-c="r">R</button><button class="btn" data-c="g">G</button><button class="btn" data-c="b">B</button></div>
+  <canvas id="crv" width="200" height="200" style="width:100%;border-radius:10px;background:rgba(0,0,0,.35);touch-action:none"></canvas>
+  </details>
+<details open data-t="mixer"><summary>Color mixer</summary><select id="hslBand" class="btn"></select>
+  <label class="row"><span>Hue</span><input class="hs" data-i="0" type="range" min="-1" max="1" step=".01" value="0"><output></output></label>
+  <label class="row"><span>Saturation</span><input class="hs" data-i="1" type="range" min="-1" max="1" step=".01" value="0"><output></output></label>
+  <label class="row"><span>Luminance</span><input class="hs" data-i="2" type="range" min="-1" max="1" step=".01" value="0"><output></output></label>
+  </details>
+<details open data-t="luts"><summary>Extras</summary><label><input type="checkbox" id="snd"> Shutter sound</label><br><label><input type="checkbox" id="shk"> Shake to cut (undo)</label><br><label><input type="checkbox" id="audio"> Audio-reactive grade (mic)</label><br><label><input type="checkbox" id="reb"> 35mm rebate border on PNG</label><br>
+  <label class="btn">Match reference photo<input id="ref" type="file" accept="image/*" hidden></label>
+  </details>
+<details open data-t="film"><summary>Film look</summary><div id="presets"></div>
+  </details>
+<details open data-t="luts"><summary>LUT slot 1 · technical</summary>
+  <label class="btn">Load LUT<input id="lut" type="file" accept=".cube" hidden></label>
+  <label class="row"><span>LUT mix</span><input type="range" id="lutMix" min="0" max="1" step="0.01" value="1"></label>
+  </details>
+<details open data-t="luts"><summary>LUT slot 2 · creative look</summary><label class="btn">Load LUT<input id="lut2" type="file" accept=".cube" hidden></label>
+  <label class="row"><span>LUT mix</span><input type="range" id="lutMix2" min="0" max="1" step="0.01" value="1"></label>
+  </details>
+<details open data-t="color"><summary>Lift · Gamma · Gain</summary><div id="wheels"><div class="wheel" data-w="lift"><canvas width="140" height="140"></canvas>Lift</div><div class="wheel" data-w="gam"><canvas width="140" height="140"></canvas>Gamma</div><div class="wheel" data-w="gain"><canvas width="140" height="140"></canvas>Gain</div></div>
+<label class="row"><span>Lift level</span><input type="range" id="wlLift" min="-1" max="1" step=".01" value="0"><output></output></label><label class="row"><span>Gamma level</span><input type="range" id="wlGam" min="-1" max="1" step=".01" value="0"><output></output></label><label class="row"><span>Gain level</span><input type="range" id="wlGain" min="-1" max="1" step=".01" value="0"><output></output></label>
+  </details>
+<details open data-t="frame"><summary>Monitoring &amp; framing</summary><label><input type="checkbox" id="zeb"> Zebra</label> <label><input type="checkbox" id="fc"> False color</label><br>
+  <select id="frame" class="btn"><option value="0">Frame: full</option><option value="2.39">2.39:1 Scope</option><option value="1.85">1.85:1 Flat</option><option value="1.43">1.43:1 IMAX</option><option value="0.5625">9:16 Social</option></select>
+  <select id="sq" class="btn"><option value="1">De-squeeze: none</option><option value="1.33">1.33x</option><option value="1.5">1.5x</option><option value="1.8">1.8x</option><option value="2">2.0x</option></select>
+  </details>
+<details open data-t="export"><summary>Export</summary>
+<div class="grp"><small>Save the photo</small><div><button class="btn" id="exPng">PNG</button></div></div>
+<div class="grp"><small>Share-ready size</small><div><button class="btn" data-ar="9:16">Story 9:16</button><button class="btn" data-ar="4:5">Post 4:5</button><button class="btn" data-ar="16:9">Video 16:9</button><button class="btn" data-ar="1:1">Square</button></div></div>
+<div class="grp"><small>Your looks</small><div><input id="lookName" class="inp" placeholder="Name your look"><button class="btn" id="saveLook">Save as my look</button><button class="btn" id="lookCard">Look card</button></div></div>
+<div class="grp"><small>Edits</small><div><button class="btn" id="saveJ">Save edit</button><label class="btn">Load edit<input id="loadJ" type="file" accept=".json" hidden></label><button class="btn" id="exCube">Bake .cube (33&sup3;)</button><button class="btn" id="reset">Reset</button></div></div>
+<div class="grp"><small>Takes and video</small><div><button class="btn" id="expCirc">Export circled takes</button><button class="btn" id="rampA">Ramp: start look</button><button class="btn" id="rampB">Ramp: end look</button><button class="btn" id="rampGo">Record 6s ramp</button></div></div>
+<div class="grp"><small>Privacy</small><div><button class="btn" id="privB">Privacy &amp; storage</button></div></div>
+</details>
+<details open data-t="cinema"><summary>Six decks. Pick a look, then set its strength.</summary><div id="decks"></div><div id="deck"></div>
+<label class="row"><span>Strength</span><input type="range" id="str" min="0" max="1.5" step=".01" value="1"><output></output></label>
+<label><input type="checkbox" id="neg"> View as camera negative (orange mask)</label><br><button class="btn" id="sheet">Export contact sheet</button></details>
+<details open data-t="masks"><summary>Local masks. Pick a type, draw it on the photo, then adjust it with the settings under the ring.</summary>
+<div id="mtypes"><button class="btn" data-mt="1">Flag</button><button class="btn" data-mt="2">Spot</button><button class="btn" data-mt="3">Range</button><button class="btn" data-mt="4">Gel</button><button class="btn" data-mt="5">Paint</button><button class="btn" id="detect">Subject (AI)</button></div>
+<div id="mslots"></div><div><button class="btn" id="minv">Invert</button><button class="btn" id="mshow">Show mask</button><button class="btn" id="mdel">Delete</button> <span id="mstat"></span></div></details><details open data-t="relight"><summary>Place a virtual light using a neural depth map</summary><button class="btn" id="depth">Estimate depth</button> <span id="dst"></span></details>
+<details open data-t="stack"><summary>Combine several tripod shots into one</summary><label class="btn">Choose 2+ photos<input id="stackIn" type="file" accept="image/*" multiple hidden></label>
+<select id="stackMode" class="btn"><option value="mean">Long exposure (average)</option><option value="median">Remove movers (median)</option></select> <span id="sst"></span></details><details open data-t="heal"><summary>Paint over a spot, dust or blemish. It is filled from matching nearby texture.</summary>
+<label class="row"><span>Brush size</span><input type="range" id="hr" min="6" max="60" value="22"><output></output></label></details>
+<details open data-t="astro"><summary>Night sky: stack frames, then stretch, shrink stars and remove gradients.</summary>
+<label class="btn">Light frames (2+)<input id="astroIn" type="file" accept="image/*" multiple hidden></label> <label class="btn">Dark frame (optional)<input id="darkIn" type="file" accept="image/*" hidden></label><br>
+<button class="btn" id="bgs">Sample sky gradient</button> <span id="ast"></span></details><details open data-t="lab"><summary>Photochemical lab: negative stock, printer lights, print stock (approximate curves)</summary>
+<label><input type="checkbox" id="labOn"> Run through film lab</label><br>
+<select id="negStock" class="btn"><option value="0">Neg: Kodak 5219 (500T)</option><option value="1">Neg: Kodak 5207 (250D)</option><option value="2">Neg: Fuji F-64D</option><option value="3">Neg: Eastman 5222 (B&W)</option></select>
+<select id="prtStock" class="btn"><option value="0">Print: Kodak 2383</option><option value="1">Print: Fuji 3513</option></select>
+<select id="labView" class="btn"><option value="0">View: print (positive)</option><option value="1">View: negative (as scanned)</option></select>
+<select id="rebFmt" class="btn"><option value="">Rebate border: off</option><option value="35">35mm 4-perf</option><option value="tech">35mm 2-perf Techniscope</option><option value="16">16mm</option><option value="65">65mm 5-perf</option></select>
+<label><input type="checkbox" id="anim"> Animate gate weave and flicker</label></details><details open data-t="pro"><summary>Shutter angle presets</summary><button class="btn" data-sh=".25">90&deg;</button><button class="btn" data-sh=".5">180&deg;</button><button class="btn" data-sh="1">360&deg;</button></details>
+<details open data-t="zone"><summary>Ansel Adams zones. Pick a zone, then lift or drop only that part of the tonal range.</summary><div id="zchips"></div>
+<label class="row"><span>Zone exposure (stops)</span><input type="range" id="zs" min="-3" max="3" step=".05" value="0"><output></output></label><label><input type="checkbox" id="zhud"> Show zone contour lines</label></details>
+<details open data-t="hue"><summary>Pick a colour, then twist its hue and saturation without touching the rest.</summary><button class="btn" id="pick">Pick colour</button> <button class="btn" id="hsOff">Clear</button><canvas id="radar" width="160" height="160"></canvas></details>
+<details open data-t="era"><summary>Drag through the years. Year: <b id="eraY">2025</b></summary><label class="row"><span>Era</span><input type="range" id="era" min="1920" max="2025" step="1" value="2025"><output></output></label></details>
+<details open data-t="palette"><summary>Match your photo's colours to a painting or film still.</summary><label class="btn">Choose reference<input id="palIn" type="file" accept="image/*" hidden></label><div id="pal"></div></details>
+<details open data-t="board"><summary>Four shots from one photo: wide, medium, close-up, extreme close-up. Run Detect subject in Masks first for tighter framing.</summary><button class="btn" id="board">Create storyboard sheet</button></details><details open data-t="gobo"><summary>Cast a pattern of light across the photo, like a stencil in front of a lamp.</summary><div id="gtypes"><button class="btn" data-g="1">Blinds</button><button class="btn" data-g="2">Leaves</button><button class="btn" data-g="3">Panes</button><button class="btn" data-g="4">Rain</button><button class="btn" data-g="5">Spots</button><button class="btn" data-g="0">Off</button></div></details><details open data-t="masters"><summary>Famous cinema colour palettes. These are my approximations in the style of well-known films, not the real grades.</summary><div id="mstrs"></div></details></aside>
+<div id="scopeWrap" class="glass"><canvas id="scope" width="256" height="140"></canvas></div>
+<script src="main.js"></script>
+</body></html>
